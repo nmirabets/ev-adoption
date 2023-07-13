@@ -297,7 +297,7 @@ def create_country_sales_rank(df: pd.DataFrame, current_year: int) -> tuple:
     # Create pie chart fig
     fig = px.pie(rank_df, values='Sales', names='Country', title='Sales by Country')
     
-    return rank_df[['Rank', 'Country', 'Sales']].head(10).style.hide(axis="index"), fig
+    return rank_df[['Rank', 'Country', 'Sales']].head(10), fig
 
 
 def create_country_sales_growth_rank_df(df: pd.DataFrame, current_year: int) -> pd.DataFrame:
@@ -311,22 +311,22 @@ def create_country_sales_growth_rank_df(df: pd.DataFrame, current_year: int) -> 
     df: pandas DataFrame
     
     '''
-    
     # Define the ranking column
     ranking_column = 'ev_sales_share_growth'
     
     # List regions that are not countries to filter them out
     exclude_regions = ['World','Europe','EU27','Other Europe','Rest of the world']
     
-    # Filter df to get rank of countries
-    sales_growth_country_rank = df[(df['year']== current_year) & (~df['region'].isin(exclude_regions))].sort_values(ranking_column, ascending = False)
+    # Filter df to get rank of countries with at least sales > 10000
+    rank_df = df[(df['year']== current_year) & (~df['region'].isin(exclude_regions)) & (df['ev_sales']> 10000)].sort_values(ranking_column, ascending = False)
     
     # Create rank column
-    sales_growth_country_rank['Rank'] = sales_growth_country_rank.reset_index().index + 1
+    rank_df['Rank'] = rank_df.reset_index().index + 1
 
-    sales_growth_country_rank.rename(columns={'region':'Country','ev_sales':'Sales','ev_sales_share_growth':'Sales share growth (%)'}, inplace=True)
+    # Rename columns to show in table
+    rank_df.rename(columns={'region':'Country','ev_sales':'Sales','ev_sales_share_growth':'Sales share growth (%)'}, inplace=True)
 
-    return sales_growth_country_rank[['Rank', 'Country', 'Sales share growth (%)', 'Sales']].head(10).style.hide(axis="index")
+    return rank_df[['Rank', 'Country', 'Sales share growth (%)', 'Sales']].head(10)
 
 
 def find_normal_curve(df: pd.DataFrame) -> tuple:
@@ -404,8 +404,8 @@ def create_adoption_curve(mu: float, sd: float, current_cdf: float):
     fig.add_trace(vertical_line2, secondary_y=False)
     
     # Add annotation with the current adoption
-    fig.add_annotation(x=x_line, y=norm.pdf(x_line, mu, sd)+0.0115, text='<b>Current CDF</b>', showarrow=False, yshift=10, font=dict(size=12, color='darkgreen'), yref='y1')
-    fig.add_annotation(x=x_line, y=norm.pdf(x_line, mu, sd)+0.006, text='<b>'+str(current_cdf*100)+'%</b>', showarrow=False, yshift=10, font=dict(size=12, color='darkgreen'), yref='y1')
+    fig.add_annotation(x=x_line-0.8, y=norm.pdf(x_line, mu, sd)+0.0115, text='<b>Current CDF</b>', showarrow=False, yshift=10, font=dict(size=12, color='darkgreen'), yref='y1')
+    fig.add_annotation(x=x_line-0.8, y=norm.pdf(x_line, mu, sd)+0.006, text='<b>'+str((current_cdf*100).round(2))+'%</b>', showarrow=False, yshift=10, font=dict(size=12, color='darkgreen'), yref='y1')
     
     # Segment CDF boundaries
     segments = [2.5, 16, 50, 84]
@@ -429,7 +429,7 @@ def create_adoption_curve(mu: float, sd: float, current_cdf: float):
     
     # Customize the layout
     fig.update_layout(
-        xaxis=dict(showgrid=True, zeroline=False, dtick=1),  # Show gridlines, zeroline, and set dtick to 1 for 1 unit interval in x-axis
+        xaxis=dict(showgrid=True, zeroline=False, dtick=2),  # Show gridlines, zeroline, and set dtick to 1 for 1 unit interval in x-axis
         yaxis=dict(showgrid=False, zeroline=True, range=[0, 0.13], side='left', showticklabels=False ),
         yaxis2=dict(showgrid=True, zeroline=False, range=[0, 1], side='right', overlaying='y', ticktext=['0%', '25%', '50%', '75%', '100%'], tickvals=[0, 0.25, 0.5, 0.75, 1]),# 0.195]),  # Create a secondary y-axis without tick labels
         showlegend=False,
