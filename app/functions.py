@@ -114,7 +114,7 @@ def get_population_segment(accum_market_share: float) -> str:
         return 'Laggards'
 
 
-def get_world_sales_share_fig(df: pd.DataFrame):
+def plot_ev_sales_share(df: pd.DataFrame):
     '''
     Generate a Plotly figure for world EV sales share.
 
@@ -131,11 +131,11 @@ def get_world_sales_share_fig(df: pd.DataFrame):
         return a * np.exp(b * (x - 2010)) + c
     
     # World EV Sales
-    fig = px.bar(world_df, x='year', y='ev_sales_share', title='World EV Sales')
+    fig = px.bar(world_df, x='year', y='ev_sales_share', title='World EV Market Share')
     
     fig.update_layout(
         xaxis_title='',
-        yaxis_title='World car sales share (%)',
+        yaxis_title='Market Share (%)',
         xaxis={'type': 'category'},
         showlegend=False
     )
@@ -150,14 +150,22 @@ def get_world_sales_share_fig(df: pd.DataFrame):
     return fig
 
 
-def plot_world_sales(df: pd.DataFrame):
+def plot_stacked_car_sales(df: pd.DataFrame):
     '''
+    Create a stacked bar chart showing global car sales split by combustion/EV over time.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data.
+
+    Returns:
+        fig: Plotly figure object representing the stacked bar chart.
+
     '''
     # Filter & rename dataframe
     world_df = df[df['region'] == 'World'].rename(columns={'ev_sales': 'Electric', 'ice_sales': 'Combustion'})
     
     # Create the stacked bar chart
-    fig = px.bar(world_df, x='year', y=['Electric', 'Combustion'], title='Global Car Sales',
+    fig = px.bar(world_df, x='year', y=['Electric', 'Combustion'], title='World Car Sales',
                 color_discrete_sequence=['#90EE90', '#ADD8E6'])
     
     # Update the layout
@@ -177,7 +185,7 @@ def plot_world_sales(df: pd.DataFrame):
     return fig
 
 
-def create_plot_and_fit(df: pd.DataFrame) -> tuple:
+def plot_and_fit_market_share(df: pd.DataFrame) -> tuple:
     '''
     Create a plot and fit different models to the data.
 
@@ -250,9 +258,9 @@ def create_plot_and_fit(df: pd.DataFrame) -> tuple:
 
     # Set layout configuration
     fig.update_layout(
-        title="EV Sales Share Trend Line Fit",
+        title="EV Market Share Trend Line Fit",
         xaxis_title="",
-        yaxis_title="Sales Share (%)",
+        yaxis_title="Market Share (%)",
         xaxis={'type': 'category'},
         legend=dict(
             orientation='h',
@@ -365,7 +373,7 @@ def find_normal_curve(df: pd.DataFrame) -> tuple:
     return mu, sd
 
 
-def create_adoption_curve(mu: float, sd: float, current_cdf: float):
+def plot_adoption_curve(mu: float, sd: float, current_cdf: float):
     '''
     Create an adoption curve plot showing the cumulative distribution function (CDF) and probability density function (PDF) of a normal distribution.
 

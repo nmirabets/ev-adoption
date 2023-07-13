@@ -24,7 +24,7 @@ def main():
         df = functions.merge_and_transform_data(ev_sales_df, car_sales_df)
 
         with st.sidebar:
-            st.header("[1. Dashboard](#dashboard)")
+            st.header("[1. Adoption Dashboard](#dashboard)")
             st.header("[2. World EV Sales](#world-sales)")
             st.header("[3. Leading Countries](#leading-countries)")
             st.header("[4. Sales Trend Fit](#trend-fit)")
@@ -33,19 +33,17 @@ def main():
 
         # Add a title and description
         st.title("EV World Adoption Tracker")
-        st.write('Here a break description')
         with st.expander("**Learn more** about EV Adoption and the *Difussion of Innovations Theory*"):
             st.markdown(''' 
             Electric Vehicles (EVs) have been around for a couple decades, but its adoption has really picked up in the last 3 years. In this project we will analyze the increasing
-            demand of EVs and who's leading it, figure out in which stage of adoption we are (according to Everett M. Rogger's [*Diffusion of Innovation Theory*
-            (https://en.wikipedia.org/wiki/Diffusion_of_innovations)) and try to estimate how long will it take for the all car transportation to become electric by finding the EV
+            demand of EVs and who's leading it, figure out in which stage of adoption we are (according to Everett M. Rogger's [*Diffusion of Innovation Theory*](https://en.wikipedia.org/wiki/Diffusion_of_innovations)) and try to estimate how long will it take for the all car transportation to become electric by finding the EV
             adoption curve.
             ''')
         st.divider() # Add a section divider
         
         # ----------------------- DASHBOARD -----------------------
 
-        st.header("Dashboard",'dashboard')
+        st.header("Adoption Dashboard",'dashboard')
         st.write('')
         
         # Get dashboard data
@@ -79,7 +77,7 @@ def main():
                       delta=None, delta_color="normal", help=None, label_visibility="visible")
 
         # ---> PLOT -> Display adoption curve plot
-        fig = functions.create_adoption_curve(mu, sd, current_ev_sales_share/100)
+        fig = functions.plot_adoption_curve(mu, sd, current_ev_sales_share/100)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
         # ---> MESSAGE BOARDS
@@ -115,11 +113,11 @@ def main():
         st.write('')  
         
         # Plot stacked bar chart EV vs ICE
-        fig = functions.plot_world_sales(df)
+        fig = functions.plot_stacked_car_sales(df)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
         # Plot world sales 
-        fig = functions.get_world_sales_share_fig(df)
+        fig = functions.plot_ev_sales_share(df)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
         st.divider() # Add a section divider
@@ -140,14 +138,14 @@ def main():
             st.dataframe(sales_rank_df, hide_index=True)
         
         # Display table of leading countries by sales growth
-        country_sales_growth_rank_df = functions.create_country_sales_growth_rank_df(df, current_year)
-        st.dataframe(country_sales_growth_rank_df, hide_index=True)
+        #country_sales_growth_rank_df = functions.create_country_sales_growth_rank_df(df, current_year)
+        #st.dataframe(country_sales_growth_rank_df, hide_index=True)
 
         st.divider() # Add a section divider
     
         # -------------------- SALES TREND LINE FIT ---------------------
 
-        st.header("Sales Trend Line Fitter",'trend-fit')
+        st.header("Market Share Trend Fitter",'trend-fit')
         st.write('')  
 
         # Selectbox to choos country
@@ -156,7 +154,7 @@ def main():
         # Filter data according t
         filtered_data = df[df['region'] == selected_category]
     
-        fig, r_sq_df = functions.create_plot_and_fit(filtered_data)
+        fig, r_sq_df = functions.plot_and_fit_market_share(filtered_data)
     
         highest_fit = r_sq_df.loc[r_sq_df["R-Squared"].idxmax(), "Fit"]
     
