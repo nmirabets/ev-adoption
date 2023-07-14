@@ -24,10 +24,10 @@ def main():
         df = functions.merge_and_transform_data(ev_sales_df, car_sales_df)
 
         with st.sidebar:
-            st.header("[1. Adoption Dashboard](#dashboard)")
+            st.header("[1. S Curve Dashboard](#dashboard)")
             st.header("[2. World EV Sales](#world-sales)")
             st.header("[3. Leading Countries](#leading-countries)")
-            st.header("[4. Sales Trend Fit](#trend-fit)")
+            st.header("[4. Market Share Trend Fit](#trend-fit)")
 
         # ----------------------- HEADER -----------------------
 
@@ -43,7 +43,7 @@ def main():
         
         # ----------------------- DASHBOARD -----------------------
 
-        st.header("Adoption Dashboard",'dashboard')
+        st.header("S Curve Dashboard",'dashboard')
         st.write('')
         
         # Get dashboard data
@@ -145,7 +145,7 @@ def main():
     
         # -------------------- SALES TREND LINE FIT ---------------------
 
-        st.header("Market Share Trend Fitter",'trend-fit')
+        st.header("Market Share Trend Fit",'trend-fit')
         st.write('')  
 
         # Selectbox to choos country
