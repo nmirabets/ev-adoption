@@ -1,4 +1,4 @@
-# Electric Vehicle (EV) Adoption Study
+# Electric Vehicle Adoption Study
 
 This data project explores the adoption of Electric Vehicles (EVs) using two datasets obtained from the International Energy Agency (IEA). The datasets consist of car sales and EV sales data from 2010 to 2022. The main objective of the project is to analyze the current state of EV adoption and answer several questions related to the trend, stage, leading countries, and rate of adoption.
 
