@@ -137,7 +137,11 @@ def plot_ev_sales_share(df: pd.DataFrame):
         xaxis_title='',
         yaxis_title='Market Share (%)',
         xaxis={'type': 'category'},
-        showlegend=False
+        showlegend=False,
+        # limit interactivity
+        dragmode=False,
+        hovermode=False,
+        clickmode='none',
     )
     
     # Add exponential line
@@ -180,7 +184,12 @@ def plot_stacked_car_sales(df: pd.DataFrame):
             y=-0.2,
             xanchor='center',
             x=0.5
-        ))
+        ),
+        # limit interactivity
+        dragmode=False,
+        hovermode=False,
+        clickmode='none',
+    )
     
     return fig
 
@@ -269,6 +278,10 @@ def plot_and_fit_market_share(df: pd.DataFrame) -> tuple:
             xanchor='center',
             x=0.5
         ),
+        # limit interactivity
+        dragmode=False,
+        hovermode=False,
+        clickmode='none',
     )
 
     return fig, r_squared_values_df
@@ -304,6 +317,13 @@ def create_country_sales_rank(df: pd.DataFrame, current_year: int) -> tuple:
 
     # Create pie chart fig
     fig = px.pie(rank_df, values='Sales', names='Country', title='Sales by Country')
+
+    fig.update_layout(
+        # limit interactivity
+        dragmode=False,
+        hovermode=False,
+        clickmode='none',
+    )
     
     return rank_df[['Rank', 'Country', 'Sales']].head(10), fig
 
@@ -441,8 +461,13 @@ def plot_adoption_curve(mu: float, sd: float, current_cdf: float):
         yaxis=dict(showgrid=False, zeroline=True, range=[0, 0.13], side='left', showticklabels=False ),
         yaxis2=dict(showgrid=True, zeroline=False, range=[0, 1], side='right', overlaying='y', ticktext=['0%', '25%', '50%', '75%', '100%'], tickvals=[0, 0.25, 0.5, 0.75, 1]),# 0.195]),  # Create a secondary y-axis without tick labels
         showlegend=False,
-        margin=dict(l=2, r=2, t=2, b=20)
+        margin=dict(l=2, r=2, t=2, b=20),
+        # limit interactivity
+        dragmode=False,
+        hovermode=False,
+        clickmode='none',
     )
+
     return fig
 
 

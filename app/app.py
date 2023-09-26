@@ -12,7 +12,7 @@ def main():
 
     # Set the page configuration
     st.set_page_config(
-    page_title="EV World Adoption Tracker",
+    page_title="🚗 EV World Adoption Tracker",
     layout="centered")
 
     # Load datasets
@@ -31,22 +31,25 @@ def main():
 
         # ----------------------- HEADER -----------------------
 
-        # Add a title and description
-        st.title("EV World Adoption Tracker")
+        st.title("🚗 EV World Adoption Tracker")
+
+        # Description
         with st.expander("**Learn more** about EV Adoption and the *Difussion of Innovations Theory*"):
             st.markdown(''' 
             Electric Vehicles (EVs) have been around for a couple decades, but its adoption has really picked up in the last 3 years. In this project we will analyze the increasing
             demand of EVs and who's leading it, figure out in which stage of adoption we are (according to Everett M. Rogger's [*Diffusion of Innovation Theory*](https://en.wikipedia.org/wiki/Diffusion_of_innovations)) and try to estimate how long will it take for the all car transportation to become electric by finding the EV
-            adoption curve.
-            ''')
-        st.divider() # Add a section divider
-        
-        # ----------------------- DASHBOARD -----------------------
+            adoption curve. This is done by building a system of non-linear equations with the datapoints from 2010-2022 and solving it using scipy's least_squares function.
+                        
+            The sections of this dashboard are:
+                    
+            1. **S Adoption Curve**: An analysis of the EV adoption curve, it's current and future stages of adoption.
+            2. **World Sales**: A look at the world car sales and the share of EVs.
+            3. **Leading Countries**: Which countries are leading the adoption of EVs?
+            4. **Market Share Trend Fit**: How long will full EV adoption take?''')
 
-        st.header("S Curve Dashboard",'dashboard')
-        st.write('')
+        st.divider()
         
-        # Get dashboard data
+        # ----------------------- GET DASHBOARD DATA -----------------------
         
         # find current adoption & delta
         current_year, current_ev_sales_share, delta = functions.get_current_year_cdf_and_delta(df)
@@ -57,7 +60,13 @@ def main():
         # find mu & sigma for normal curve
         mu, sd = functions.find_normal_curve(df)
 
-        # ---> METRICS BAR
+        # ----------------------- S CURVE DASHBOARD -----------------------
+
+        st.header("S Curve Dashboard",'dashboard')
+        st.write('') 
+
+        # --- TOP BAR METRICS --
+        
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -75,12 +84,13 @@ def main():
             # Standard deviation metric 
             st.metric('Standard deviation (σ)', str(sd.round(1))+' years', 
                       delta=None, delta_color="normal", help=None, label_visibility="visible")
+            
+        # --- S CURVE PLOT --
 
-        # ---> PLOT -> Display adoption curve plot
         fig = functions.plot_adoption_curve(mu, sd, current_ev_sales_share/100)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
-        # ---> MESSAGE BOARDS
+        # --- MESSAGE BOARDS ---
 
         # Current stage message
         msg1="We are currently in the **{} stage** with **{}%** of car sales being electric.".format(
@@ -105,7 +115,7 @@ def main():
             msg3="**{} years left** for **95%** of car sales to be electric".format(interval)
             st.info(msg3, icon="🌍")
 
-        st.divider() # Add a section divider
+        st.divider()
         
         # ----------------------- WORLD SALES -----------------------
 
@@ -120,35 +130,28 @@ def main():
         fig = functions.plot_ev_sales_share(df)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
-        st.divider() # Add a section divider
+        st.divider()
         
         # -------------------- SALES RANK BY COUNTRY ---------------------
 
         st.header("Leading Countries",'leading-countries')
         st.write('')  
 
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Display pie plot of leading countries by sales
-            sales_rank_df, fig = functions.create_country_sales_rank(df, current_year)
-            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-        with col2:
-            # Display table of leading countries by sales
-            st.dataframe(sales_rank_df, hide_index=True)
-        
-        # Display table of leading countries by sales growth
-        #country_sales_growth_rank_df = functions.create_country_sales_growth_rank_df(df, current_year)
-        #st.dataframe(country_sales_growth_rank_df, hide_index=True)
+        # Display pie plot of leading countries by sales
+        sales_rank_df, fig = functions.create_country_sales_rank(df, current_year)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
-        st.divider() # Add a section divider
+        # Display table of leading countries by sales
+        st.dataframe(sales_rank_df, hide_index=True)
+
+        st.divider()
     
         # -------------------- SALES TREND LINE FIT ---------------------
 
         st.header("Market Share Trend Fit",'trend-fit')
         st.write('')  
 
-        # Selectbox to choos country
+        # Selectbox to choose country
         selected_category = st.selectbox('Select a region', df['region'].unique(),index=len(df['region'].unique())-1)
 
         # Filter data according t
@@ -164,7 +167,7 @@ def main():
     
         st.info('The best fit for *' + selected_category + '* is **' + highest_fit + '** with an R-Squared of **' + highest_r_squared + '**')
     
-        st.dataframe(r_sq_df, hide_index=True)#, use_container_width=True)
+        st.dataframe(r_sq_df, hide_index=True)
 
 if __name__ == "__main__":
     main()
